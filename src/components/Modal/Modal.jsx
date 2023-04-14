@@ -1,7 +1,7 @@
-export const Modal = ({ image }) => (
-  <div class="overlay">
-  <div class="modal">
-    <img src={image.largeImageURL} alt="" />
+export const Modal = ({ largeImageURL }) => (
+  <div className="overlay">
+  <div className="modal">
+    <img src={largeImageURL} alt="" />
   </div>
 </div>
 )
