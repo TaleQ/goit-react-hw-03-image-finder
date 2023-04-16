@@ -1,7 +1,14 @@
+import { ModalOverlay, StyledModal, ModalImg } from './Modal.styled';
+import PropTypes from 'prop-types'
+
 export const Modal = ({ largeImageURL }) => (
-  <div className="overlay">
-  <div className="modal">
-    <img src={largeImageURL} alt="" />
-  </div>
-</div>
-)
+  <ModalOverlay>
+    <StyledModal>
+      <ModalImg src={largeImageURL} alt="" />
+    </StyledModal>
+  </ModalOverlay>
+);
+
+Modal.propTypes = {
+  imgUrl: PropTypes.string.isRequired
+}

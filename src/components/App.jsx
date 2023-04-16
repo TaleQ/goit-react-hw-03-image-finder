@@ -18,7 +18,7 @@ export class App extends Component {
     isLoading: false,
     error: null,
     isShowModal: false,
-    // largeImageUrl: ""
+    largeImageUrl: ""
   };
   componentDidMount() {}
   async componentDidUpdate(_, prevState) {
@@ -28,13 +28,12 @@ export class App extends Component {
         isLoading: true,
       });
       try {
-        const hits = await fetchImages(searchQuery, page);
-        if (hits.length === 0) {
+        const data = await fetchImages(searchQuery, page);
+        if (data.hits.length === 0) {
           Notify.failure("No images found")
         } else {
-          console.log(hits);
           this.setState(prevState => ({
-          images: hits,
+          images: data.hits,
           page: prevState.page + 1,
         }));
         }
@@ -59,12 +58,37 @@ export class App extends Component {
       page: 1,
     });
   };
-  openModal = () => {
+  openModal = (largeImageUrl) => {
+    console.log(largeImageUrl);
     this.setState({
-      isShowModal: true,
+      largeImageUrl: largeImageUrl,
+      isShowModal: true
     });
   };
-  loadMoreImg = () => {};
+  async loadMoreImg() {
+    console.log("btn");
+    this.setState({
+        isLoading: true,
+      });
+    try {
+        const { searchQuery, page } = this.state;
+      const data = await fetchImages(searchQuery, page);
+      console.log(data);
+      this.setState(prevState => ({
+          images: [...prevState.images, ...data.hits],
+          page: prevState.page + 1,
+        }));
+        // if (data.hits.length === 0) {
+        //   Notify.failure("No images found")
+        // } else {
+          
+        // }
+      } catch (error) {
+        this.setState({ error: error });
+      } finally {
+        this.setState({ isLoading: false });
+      }
+  };
   render() {
     const { images, isLoading, isShowModal, largeImageUrl } = this.state;
     return (
@@ -78,7 +102,7 @@ export class App extends Component {
             ) : null}
           </ImageGallery>
         </div>
-        {images.length > 0 && <Button onCLick={this.loadMoreImg}></Button>}
+        {images.length > 0 && <Button onClick={this.loadMoreImg.bind(this)}></Button>}
         {isShowModal && <Modal imgUrl={largeImageUrl} />}
       </Wrapper>
     );
