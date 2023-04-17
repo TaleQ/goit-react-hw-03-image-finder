@@ -18,9 +18,9 @@ export class App extends Component {
     isLoading: false,
     error: null,
     isShowModal: false,
-    largeImageUrl: ""
+    largeImageUrl: "",
+    totalHits: ""
   };
-  componentDidMount() {}
   async componentDidUpdate(_, prevState) {
     const { searchQuery, page } = this.state;
     if (prevState.searchQuery !== searchQuery) {
@@ -35,6 +35,7 @@ export class App extends Component {
           this.setState(prevState => ({
           images: data.hits,
           page: prevState.page + 1,
+          totalHits: data.totalHits
         }));
         }
       } catch (error) {
@@ -43,10 +44,24 @@ export class App extends Component {
         this.setState({ isLoading: false });
       }
     }
-  }
-  componentDidCatch(error) {
-    console.log(error);
-  }
+  };
+  async loadMoreImg() {
+    this.setState({
+        isLoading: true,
+      });
+    try {
+        const { searchQuery, page } = this.state;
+      const data = await fetchImages(searchQuery, page);
+      this.setState(prevState => ({
+          images: [...prevState.images, ...data.hits],
+          page: prevState.page + 1,
+        }));
+      } catch (error) {
+        this.setState({ error: error });
+      } finally {
+        this.setState({ isLoading: false });
+      }
+  };
   searchFormSubmit = value => {
     if (value === this.state.searchQuery) {
       Notify.info(`Results for query "${value}" are already shown. Press "Load more" to see more images`)
@@ -58,39 +73,20 @@ export class App extends Component {
       page: 1,
     });
   };
-  openModal = (largeImageUrl) => {
-    console.log(largeImageUrl);
+  openModal = largeImageUrl => {
     this.setState({
       largeImageUrl: largeImageUrl,
       isShowModal: true
     });
   };
-  async loadMoreImg() {
-    console.log("btn");
+  hideModal = () => {
     this.setState({
-        isLoading: true,
-      });
-    try {
-        const { searchQuery, page } = this.state;
-      const data = await fetchImages(searchQuery, page);
-      console.log(data);
-      this.setState(prevState => ({
-          images: [...prevState.images, ...data.hits],
-          page: prevState.page + 1,
-        }));
-        // if (data.hits.length === 0) {
-        //   Notify.failure("No images found")
-        // } else {
-          
-        // }
-      } catch (error) {
-        this.setState({ error: error });
-      } finally {
-        this.setState({ isLoading: false });
-      }
-  };
+      largeImageUrl: "",
+      isShowModal: false
+    });
+  }
   render() {
-    const { images, isLoading, isShowModal, largeImageUrl } = this.state;
+    const { images, isLoading, isShowModal, largeImageUrl, totalHits } = this.state;
     return (
       <Wrapper>
         <SearchBar onSubmit={this.searchFormSubmit}></SearchBar>
@@ -102,8 +98,8 @@ export class App extends Component {
             ) : null}
           </ImageGallery>
         </div>
-        {images.length > 0 && <Button onClick={this.loadMoreImg.bind(this)}></Button>}
-        {isShowModal && <Modal imgUrl={largeImageUrl} />}
+        {images.length > 0 && images.length < totalHits ? (<Button onClick={this.loadMoreImg.bind(this)}></Button>) : null}
+        {isShowModal && <Modal imgUrl={largeImageUrl} hideModal={this.hideModal} />}
       </Wrapper>
     );
   }

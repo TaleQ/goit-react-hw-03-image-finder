@@ -14,12 +14,9 @@ export const ModalOverlay = styled.div`
 `;
 
 export const StyledModal = styled.div`
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 24px);
 `;
 
 export const ModalImg = styled.img`
-width: 1080px;
-height: 814px;
-z-index: 1300;
+max-width: calc(100vw - 48px);
+max-height: calc(100vh - 24px);
 `
