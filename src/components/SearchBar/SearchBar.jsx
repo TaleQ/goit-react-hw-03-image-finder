@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { Notify } from "notiflix";
 import { Header, SearchForm, SearchFormButton, SearchFormInput, SearchFormSpan} from './SearchBar.styled';
 import { PropTypes } from 'prop-types';
+import { TfiSearch } from "react-icons/tfi";
 
 export class SearchBar extends Component {
   state = {
@@ -30,6 +31,7 @@ export class SearchBar extends Component {
       <Header>
         <SearchForm onSubmit={this.handleSubmit}>
           <SearchFormButton type="submit">
+            <TfiSearch fill="#3f4145"/>
             <SearchFormSpan>Search</SearchFormSpan>
           </SearchFormButton>
           <SearchFormInput
